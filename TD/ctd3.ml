@@ -22,15 +22,20 @@ let rec for_all pred l = match l with
   ;;
 let for_all_v2 pred l = not (exists pred l);;
 
-let mapFilter f pred l = 
-  let l_output = [] in
-  let rec map_filter_rec f pred l_in l_out = match l_in with
-    | [] ->  l_out
-    | hd::ld ->
-      if (pred hd) then map_filter_rec f pred ld (f hd::l_out)
-      else map_filter_rec f pred ld l_out
-    in map_filter_rec f pred l l_output
-  ;;
+
+let rec mapFilter f pred = function
+  | [] -> []
+  | hd::tl -> 
+    if (pred hd) then  (f hd) :: (mapFilter f pred tl)
+    else (mapFilter f pred tl)
+;;
+
+let mapFilterTerm f pred l =
+  let rec aux f pred acc = function
+    | [] -> acc
+    | hd::tl -> aux f pred (if (pred hd) then (f hd::acc) else acc) tl
+  in aux f pred [] l
+;;
 
 type voiture_enr = {
   constructeur : string;
@@ -46,7 +51,7 @@ let constructeur = function
   | V (c,_,_,_,_) -> c
 ;;
 
-let constructeur = function
+let model = function
   | V (_,m,_,_,_) -> m
 ;;
 
@@ -68,8 +73,18 @@ let req1 x y l =
   filter pred l
 ;;
 
-let req2 x l = 
-  let pred elem = kilometrage elem > x in 
-  mapFilter (fun elem -> immatriculation elem) pred l
 
-(* à finir *)
+let req2 liste = 
+  let renault = List.filter (fun e -> (constructeur e) = "Renault") liste in
+  let v_filtrer = List.filter (fun x -> List.for_all (fun y -> x > y) renault) liste in
+  List.map immatriculation v_filtrer
+;;
+
+(* Exercice 1
+10
+10
+-2
+-10
+[4;3;6;1;2;3;7;8]
+[7;8;4;3;6;1;2;3]
+*)

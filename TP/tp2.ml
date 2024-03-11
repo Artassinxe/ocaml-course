@@ -100,6 +100,6 @@ let zero2 n =
 
 let unite2 n = 
   let create_row i =
-    create (fun j -> if (j==i) then 1 else 0) n
+    create (fun j -> if (j=i) then 1 else 0) n
   in create create_row n
 ;;
